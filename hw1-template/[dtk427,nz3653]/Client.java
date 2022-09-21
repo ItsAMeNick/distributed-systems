@@ -29,27 +29,48 @@ public class Client {
             if (tokens[0].equals("setmode")) {
                 // TODO: set the mode of communication for sending commands to the server
                 // and display the name of the protocol that will be used in future
-                if (tokens.length == 2 && tokens[1].equals("T")) {
-                    System.out.println("Communication Mode: TCP");
-                    useTCPMode = true;
-                } else if (tokens.length == 2 && tokens[1].equals("U")) {
-                    System.out.println("Communication Mode: UDP");
-                    useTCPMode = false;
+
+                if (tokens.length >= 2) {
+                    if (tokens[1].equals("T")) {
+                        System.out.println("Communication Mode: TCP");
+                        useTCPMode = true;
+                    } else if (tokens[1].equals("U")) {
+                        System.out.println("Communication Mode: UDP");
+                        useTCPMode = false;
+                    } else {
+                       System.out.println("setmode <T|U>: Improper use");
+                   }
                 } else {
-                    System.out.println("T|U: Unexpected argument");
+                    System.out.println("setmode <T|U>: Improper use");
                 }
             } else if (tokens[0].equals("purchase")) {
-                // TODO: send appropriate command to the server and display the
-                // appropriate responses form the server
+                if (tokens.length >= 4) {
+                    // TODO: send appropriate command to the server and display the
+                    // appropriate responses form the server
+                } else {
+                    System.out.println("purchase <username> <product-name> <quantity>: Improper use");
+                }
             } else if (tokens[0].equals("cancel")) {
-                // TODO: send appropriate command to the server and display the
-                // appropriate responses form the server
+                if (tokens.length >= 2) {
+                    // TODO: send appropriate command to the server and display the
+                    // appropriate responses form the server
+                } else {
+                    System.out.println("cancel <order-id>: Improper use");
+                }
             } else if (tokens[0].equals("search")) {
-                // TODO: send appropriate command to the server and display the
-                // appropriate responses form the server
+                if (tokens.length >= 2) {
+                    // TODO: send appropriate command to the server and display the
+                    // appropriate responses form the server
+                } else {
+                    System.out.println("search <user-name>: Improper use");
+                }
             } else if (tokens[0].equals("list")) {
-                // TODO: send appropriate command to the server and display the
-                // appropriate responses form the server
+                if (tokens.length >= 1) {
+                    // TODO: send appropriate command to the server and display the
+                    // appropriate responses form the server
+                } else {
+                    System.out.println("list: Improper use");
+                }
             } else {
                 System.out.println("ERROR: No such command");
             }
