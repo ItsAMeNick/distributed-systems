@@ -1,4 +1,6 @@
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
+import java.net.*;
 
 public class Client {
     public static void main (String[] args) {
@@ -27,9 +29,6 @@ public class Client {
             String[] tokens = cmd.split(" ");
 
             if (tokens[0].equals("setmode")) {
-                // TODO: set the mode of communication for sending commands to the server
-                // and display the name of the protocol that will be used in future
-
                 if (tokens.length >= 2) {
                     if (tokens[1].equals("T")) {
                         System.out.println("Communication Mode: TCP");
@@ -68,6 +67,11 @@ public class Client {
                 if (tokens.length >= 1) {
                     // TODO: send appropriate command to the server and display the
                     // appropriate responses form the server
+                    ArrayList<String> response = sendCommandAndAwaitResponse(tokens[0], hostAddress, udpPort);
+                    for (String message : response) {
+                        System.out.println(message);
+                    }
+
                 } else {
                     System.out.println("list: Improper use");
                 }
@@ -75,5 +79,24 @@ public class Client {
                 System.out.println("ERROR: No such command");
             }
         }
+    }
+
+    private static ArrayList<String> sendCommandAndAwaitResponse(String command, String hostAddress, int udpPort) {
+        ArrayList<String> allMessages = new ArrayList<>();
+
+        try {
+            Socket server = new Socket(hostAddress, udpPort);
+            Scanner din = new Scanner(server.getInputStream());
+            PrintStream pout = new PrintStream(server.getOutputStream());
+
+            pout.println(command);
+            pout.flush();
+            while (din.hasNextLine()) {
+                allMessages.add(din.nextLine());
+            }
+        } catch (IOException e){
+            System.err.println(e);
+        }
+        return allMessages;
     }
 }
