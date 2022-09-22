@@ -62,7 +62,10 @@ public class Client {
                 if (tokens.length >= 2) {
                     // TODO: send appropriate command to the server and display the
                     // appropriate responses form the server
-                    System.out.println(sendCommandAndAwaitResponse(cmd, hostAddress, udpPort).get(0));
+                    ArrayList<String> response = sendCommandAndAwaitResponse(cmd, hostAddress, udpPort);
+                    for (String message : response) {
+                        System.out.println(message);
+                    }
                 } else {
                     System.out.println("search <user-name>: Improper use");
                 }

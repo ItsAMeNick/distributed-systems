@@ -80,7 +80,7 @@ public class Inventory {
             if (inventoryMap.get(product) >= purchaseQtt) {
                 String message = "You order has been placed, " + nextOrderNumber + " " +
                     userName + " " + product + " " + purchaseQtt;
-                orderMap.put(nextOrderNumber, product + " " + purchaseQtt);
+                orderMap.put(nextOrderNumber, userName + " " + product + " " + purchaseQtt);
                 nextOrderNumber += 1;
                 inventoryMap.put(product, inventoryMap.get(product) - purchaseQtt);
 
@@ -95,15 +95,37 @@ public class Inventory {
 
     public String cancel(Integer orderNumber) {
         if (orderMap.containsKey(orderNumber)) {
-            ArrayList<String> order = new ArrayList<String>(Arrays.asList(
-                orderMap.get(orderNumber).split(" ")
-            ));
-            inventoryMap.put(order.get(0), inventoryMap.get(order.get(0)) + Integer.parseInt(order.get(1)));
+            ArrayList<String> order = new ArrayList<String>(
+                Arrays.asList(
+                    orderMap.get(orderNumber).split(" ")
+                )
+            );
+            inventoryMap.put(order.get(1), inventoryMap.get(order.get(1)) + Integer.parseInt(order.get(2)));
             orderMap.remove(orderNumber);
             return "Order " + orderNumber + " is canceled";
         } else {
             return orderNumber + " not found, no such order";
         }
+    }
+
+    public ArrayList<String> search(String userName) {
+        ArrayList<String> usersOrders = new ArrayList<>();
+        for (Integer orderNumber : orderMap.keySet()) {
+            ArrayList<String> order = new ArrayList<String>(
+                Arrays.asList(
+                    orderMap.get(orderNumber).split(" ")
+                )
+            );
+            if (order.get(0).equals(userName)) {
+                System.out.println("check " + order);
+                usersOrders.add(orderNumber + ", " + order.get(1) + ", " + order.get(2));
+            }
+        }
+
+        if (usersOrders.size() == 0) {
+            usersOrders.add("No order found for " + userName);
+        }
+        return usersOrders;
     }
 }
 
@@ -138,7 +160,9 @@ public class UDPServerThread extends Thread {
                     )
                 );
             } else if (tag.equals("search")) {
-
+                for (String message : inventory.search(st.next())) {
+                    pout.println(message);
+                }
             } else if (tag.equals("list")) {
                 for (String message : inventory.list()) {
                     pout.println(message);
