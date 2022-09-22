@@ -41,6 +41,8 @@ public class Server {
 
 public class Inventory {
     Map<String, Integer> inventoryMap = new HashMap<>();
+    Map<Integer, String> orderMap = new HashMap<>();
+    Integer nextOrderNumber = 1;
     public Inventory(String fileToLoadFrom) {
         try {
             File file = new File(fileToLoadFrom);
@@ -72,6 +74,37 @@ public class Inventory {
         }
         return listMessage;
     }
+
+    public String purchase(String userName, String product, Integer purchaseQtt) {
+        if (inventoryMap.containsKey(product)) {
+            if (inventoryMap.get(product) >= purchaseQtt) {
+                String message = "You order has been placed, " + nextOrderNumber + " " +
+                    userName + " " + product + " " + purchaseQtt;
+                orderMap.put(nextOrderNumber, product + " " + purchaseQtt);
+                nextOrderNumber += 1;
+                inventoryMap.put(product, inventoryMap.get(product) - purchaseQtt);
+
+                return message;
+            } else {
+                return "Not Available - Not enough items";
+            }
+        } else {
+            return "Not Available - We do not sell this product";
+        }
+    }
+
+    public String cancel(Integer orderNumber) {
+        if (orderMap.containsKey(orderNumber)) {
+            ArrayList<String> order = new ArrayList<String>(Arrays.asList(
+                orderMap.get(orderNumber).split(" ")
+            ));
+            inventoryMap.put(order.get(0), inventoryMap.get(order.get(0)) + Integer.parseInt(order.get(1)));
+            orderMap.remove(orderNumber);
+            return "Order " + orderNumber + " is canceled";
+        } else {
+            return orderNumber + " not found, no such order";
+        }
+    }
 }
 
 public class UDPServerThread extends Thread {
@@ -91,9 +124,19 @@ public class UDPServerThread extends Thread {
             Scanner st = new Scanner(command);
             String tag = st.next();
             if (tag.equals("purchase")) {
-
+                pout.println(
+                    inventory.purchase(
+                        st.next(),
+                        st.next(),
+                        Integer.parseInt(st.next())
+                    )
+                );
             } else if (tag.equals("cancel")) {
-
+                pout.println(
+                    inventory.cancel(
+                        Integer.parseInt(st.next())
+                    )
+                );
             } else if (tag.equals("search")) {
 
             } else if (tag.equals("list")) {

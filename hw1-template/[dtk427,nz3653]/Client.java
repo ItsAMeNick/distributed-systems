@@ -46,6 +46,7 @@ public class Client {
                 if (tokens.length >= 4) {
                     // TODO: send appropriate command to the server and display the
                     // appropriate responses form the server
+                    System.out.println(sendCommandAndAwaitResponse(cmd, hostAddress, udpPort).get(0));
                 } else {
                     System.out.println("purchase <username> <product-name> <quantity>: Improper use");
                 }
@@ -53,6 +54,7 @@ public class Client {
                 if (tokens.length >= 2) {
                     // TODO: send appropriate command to the server and display the
                     // appropriate responses form the server
+                    System.out.println(sendCommandAndAwaitResponse(cmd, hostAddress, udpPort).get(0));
                 } else {
                     System.out.println("cancel <order-id>: Improper use");
                 }
@@ -60,6 +62,7 @@ public class Client {
                 if (tokens.length >= 2) {
                     // TODO: send appropriate command to the server and display the
                     // appropriate responses form the server
+                    System.out.println(sendCommandAndAwaitResponse(cmd, hostAddress, udpPort).get(0));
                 } else {
                     System.out.println("search <user-name>: Improper use");
                 }
