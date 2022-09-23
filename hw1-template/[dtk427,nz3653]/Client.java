@@ -28,6 +28,9 @@ public class Client {
             String cmd = sc.nextLine();
             String[] tokens = cmd.split(" ");
 
+            // This entire switch should be moved to be server side, but I wanted to add
+            // argument validation locally and thiat menifested poorly when it came
+            // to all the unnecessary tcp/udp checks
             if (tokens[0].equals("setmode")) {
                 if (tokens.length >= 2) {
                     if (tokens[1].equals("T")) {
@@ -45,9 +48,10 @@ public class Client {
             } else if (tokens[0].equals("purchase")) {
                 if (tokens.length >= 4) {
                     if (useTCPMode) {
-                        System.out.println(sendCommandAndAwaitResponse(cmd, hostAddress, tcpPort).get(0));
+                        System.out.println(sendCommandBlockingTCP(cmd, hostAddress, tcpPort).get(0));
                     } else {
-
+                        String response = sendCommandBlockingUDP(cmd, hostAddress, udpPort);
+                        System.out.println(response);
                     }
                 } else {
                     System.out.println("purchase <username> <product-name> <quantity>: Improper use");
@@ -55,9 +59,10 @@ public class Client {
             } else if (tokens[0].equals("cancel")) {
                 if (tokens.length >= 2) {
                     if (useTCPMode) {
-                        System.out.println(sendCommandAndAwaitResponse(cmd, hostAddress, tcpPort).get(0));
+                        System.out.println(sendCommandBlockingTCP(cmd, hostAddress, tcpPort).get(0));
                     } else {
-
+                        String response = sendCommandBlockingUDP(cmd, hostAddress, udpPort);
+                        System.out.println(response);
                     }
                 } else {
                     System.out.println("cancel <order-id>: Improper use");
@@ -65,12 +70,13 @@ public class Client {
             } else if (tokens[0].equals("search")) {
                 if (tokens.length >= 2) {
                     if (useTCPMode) {
-                        ArrayList<String> response = sendCommandAndAwaitResponse(cmd, hostAddress, tcpPort);
+                        ArrayList<String> response = sendCommandBlockingTCP(cmd, hostAddress, tcpPort);
                         for (String message : response) {
                             System.out.println(message);
                         }
                     } else {
-
+                        String response = sendCommandBlockingUDP(cmd, hostAddress, udpPort);
+                        System.out.println(response);
                     }
                 } else {
                     System.out.println("search <user-name>: Improper use");
@@ -78,12 +84,13 @@ public class Client {
             } else if (tokens[0].equals("list")) {
                 if (tokens.length >= 1) {
                     if (useTCPMode) {
-                        ArrayList<String> response = sendCommandAndAwaitResponse(tokens[0], hostAddress, tcpPort);
+                        ArrayList<String> response = sendCommandBlockingTCP(tokens[0], hostAddress, tcpPort);
                         for (String message : response) {
                             System.out.println(message);
                         }
                     } else {
-
+                        String response = sendCommandBlockingUDP(tokens[0], hostAddress, udpPort);
+                        System.out.println(response);
                     }
                 } else {
                     System.out.println("list: Improper use");
@@ -94,7 +101,7 @@ public class Client {
         }
     }
 
-    private static ArrayList<String> sendCommandAndAwaitResponse(String command, String hostAddress, int tcpPort) {
+    private static ArrayList<String> sendCommandBlockingTCP(String command, String hostAddress, int tcpPort) {
         ArrayList<String> allMessages = new ArrayList<>();
 
         try {
@@ -111,5 +118,32 @@ public class Client {
             System.err.println(e);
         }
         return allMessages;
+    }
+
+    private static String sendCommandBlockingUDP(String command, String hostAddress, int udpPort) {
+        String returnMessage = "";
+
+        DatagramPacket sPacket, rPacket ;
+        try{
+            InetAddress ia = InetAddress.getByName(hostAddress) ;
+            DatagramSocket datasocket = new DatagramSocket() ;
+
+            byte[] buffer = new byte[command.length()];
+            buffer = command.getBytes();
+            sPacket = new DatagramPacket(buffer, buffer.length, ia, udpPort);
+            datasocket.send(sPacket);
+            byte[] rbuffer = new byte[1024];
+            rPacket = new DatagramPacket(rbuffer, rbuffer.length);
+            datasocket.receive(rPacket);
+            returnMessage = new String(rPacket.getData(), 0, rPacket.getLength()).strip();
+        } catch (UnknownHostException e ) {
+            System.err.println(e);
+        } catch ( SocketException se ) {
+            System.err.println(se);
+        }  catch (IOException e){
+            System.err.println(e);
+        }
+
+        return returnMessage;
     }
 }
