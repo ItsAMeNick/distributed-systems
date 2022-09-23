@@ -21,21 +21,18 @@ public class Server {
     // Common inventory to be used by all the server threads
     Inventory inventory = new Inventory(fileName);
 
-    // Set up the UDP Port
+    // Set up the TCP Port
     try {
-		ServerSocket listener = new ServerSocket(udpPort);
+		ServerSocket listener = new ServerSocket(tcpPort);
 		Socket s;
 		while ( (s = listener.accept()) != null) {
-			Thread t = new UDPServerThread(inventory, s);
+			Thread t = new TCPServerThread(inventory, s);
 			t.start();
 		}
 	} catch (IOException e) {
 		System.err.println("Server aborted:" + e);
 	}
 
-    // Set up the TCP Port
-
-    // TODO: handle request from clients
     }
 }
 
@@ -129,10 +126,10 @@ public class Inventory {
     }
 }
 
-public class UDPServerThread extends Thread {
+public class TCPServerThread extends Thread {
     Inventory inventory;
     Socket theClient;
-    public UDPServerThread(Inventory inventory, Socket s) {
+    public TCPServerThread(Inventory inventory, Socket s) {
         this.inventory = inventory;
         theClient = s;
     }

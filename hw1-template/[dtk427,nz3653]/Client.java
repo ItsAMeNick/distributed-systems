@@ -44,40 +44,47 @@ public class Client {
                 }
             } else if (tokens[0].equals("purchase")) {
                 if (tokens.length >= 4) {
-                    // TODO: send appropriate command to the server and display the
-                    // appropriate responses form the server
-                    System.out.println(sendCommandAndAwaitResponse(cmd, hostAddress, udpPort).get(0));
+                    if (useTCPMode) {
+                        System.out.println(sendCommandAndAwaitResponse(cmd, hostAddress, tcpPort).get(0));
+                    } else {
+
+                    }
                 } else {
                     System.out.println("purchase <username> <product-name> <quantity>: Improper use");
                 }
             } else if (tokens[0].equals("cancel")) {
                 if (tokens.length >= 2) {
-                    // TODO: send appropriate command to the server and display the
-                    // appropriate responses form the server
-                    System.out.println(sendCommandAndAwaitResponse(cmd, hostAddress, udpPort).get(0));
+                    if (useTCPMode) {
+                        System.out.println(sendCommandAndAwaitResponse(cmd, hostAddress, tcpPort).get(0));
+                    } else {
+
+                    }
                 } else {
                     System.out.println("cancel <order-id>: Improper use");
                 }
             } else if (tokens[0].equals("search")) {
                 if (tokens.length >= 2) {
-                    // TODO: send appropriate command to the server and display the
-                    // appropriate responses form the server
-                    ArrayList<String> response = sendCommandAndAwaitResponse(cmd, hostAddress, udpPort);
-                    for (String message : response) {
-                        System.out.println(message);
+                    if (useTCPMode) {
+                        ArrayList<String> response = sendCommandAndAwaitResponse(cmd, hostAddress, tcpPort);
+                        for (String message : response) {
+                            System.out.println(message);
+                        }
+                    } else {
+
                     }
                 } else {
                     System.out.println("search <user-name>: Improper use");
                 }
             } else if (tokens[0].equals("list")) {
                 if (tokens.length >= 1) {
-                    // TODO: send appropriate command to the server and display the
-                    // appropriate responses form the server
-                    ArrayList<String> response = sendCommandAndAwaitResponse(tokens[0], hostAddress, udpPort);
-                    for (String message : response) {
-                        System.out.println(message);
-                    }
+                    if (useTCPMode) {
+                        ArrayList<String> response = sendCommandAndAwaitResponse(tokens[0], hostAddress, tcpPort);
+                        for (String message : response) {
+                            System.out.println(message);
+                        }
+                    } else {
 
+                    }
                 } else {
                     System.out.println("list: Improper use");
                 }
@@ -87,11 +94,11 @@ public class Client {
         }
     }
 
-    private static ArrayList<String> sendCommandAndAwaitResponse(String command, String hostAddress, int udpPort) {
+    private static ArrayList<String> sendCommandAndAwaitResponse(String command, String hostAddress, int tcpPort) {
         ArrayList<String> allMessages = new ArrayList<>();
 
         try {
-            Socket server = new Socket(hostAddress, udpPort);
+            Socket server = new Socket(hostAddress, tcpPort);
             Scanner din = new Scanner(server.getInputStream());
             PrintStream pout = new PrintStream(server.getOutputStream());
 
